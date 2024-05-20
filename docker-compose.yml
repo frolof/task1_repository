@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+    php:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: php_app
+        volumes:
+            - .:/app
+        command: php bin/app.php input.txt
+
+    test:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: php_test
+        volumes:
+            - .:/app
+        command: vendor/bin/phpunit --configuration phpunit.xml --colors=always
+
+    coverage:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: php_coverage
+        volumes:
+            - .:/app
+        command: phpdbg -qrr vendor/bin/phpunit --configuration phpunit.xml --coverage-text --coverage-html var/coverage
+
+    cs-fixer:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: php_cs_fixer
+        volumes:
+            - .:/app
+        command: php-cs-fixer fix --config=.php-cs-fixer.dist.php --verbose
